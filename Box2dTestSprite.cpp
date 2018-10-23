@@ -1,19 +1,17 @@
 #include "Box2dTestSprite.h"
+#include "Box2dHelper.h"
 
 #define PTM_RATIO 32
 
 using namespace cocos2d;
 
-Box2dTestSprite::Box2dTestSprite():
-	world(nullptr)
+Box2dTestSprite::Box2dTestSprite()
 {
 
 }
 
 Box2dTestSprite::~Box2dTestSprite()
 {
-	CC_SAFE_DELETE(_debugDraw);
-	CC_SAFE_DELETE(world);
 }
 
 bool Box2dTestSprite::init()
@@ -36,44 +34,11 @@ bool Box2dTestSprite::init()
 
 void Box2dTestSprite::initPhysics()
 {
-	b2Vec2 gravity;
-	gravity.Set(0.0f, -10.0f);
-	world = new b2World(gravity);
-	world->SetAllowSleeping(true);
-	world->SetContinuousPhysics(true);
-
-	_debugDraw = new GLESDebugDraw(32);
-	uint32 flags = 0;
-	flags += b2Draw::e_shapeBit;
-	_debugDraw->SetFlags(flags);
-
-	world->SetDebugDraw(_debugDraw);
-
-	b2BodyDef groundBodyDef;
-	groundBodyDef.position.Set(0, 0);
-	b2Body* groundBody = world->CreateBody(&groundBodyDef);
-	
 	cocos2d::Vec2 visibleOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
 	cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
-
-	b2EdgeShape groundBox;
-	groundBox.Set(b2Vec2(visibleOrigin.x / PTM_RATIO, visibleOrigin.y / PTM_RATIO), b2Vec2((visibleOrigin.x + visibleSize.width) / PTM_RATIO, (visibleOrigin.y) / PTM_RATIO));
-	groundBody->CreateFixture(&groundBox, 0);
-
-	// top
-	groundBox.Set(b2Vec2(visibleOrigin.x / PTM_RATIO, (visibleOrigin.y + visibleSize.height) / PTM_RATIO), b2Vec2((visibleOrigin.x + visibleSize.width) / PTM_RATIO, (visibleOrigin.y + visibleSize.height) / PTM_RATIO));
-	groundBody->CreateFixture(&groundBox, 0);
-
-	// left
-	groundBox.Set(b2Vec2(visibleOrigin.x / PTM_RATIO, (visibleOrigin.y + visibleSize.height) / PTM_RATIO), b2Vec2(visibleOrigin.x / PTM_RATIO, (visibleOrigin.y) / PTM_RATIO));
-	groundBody->CreateFixture(&groundBox, 0);
-
-	// right
-	groundBox.Set(b2Vec2((visibleOrigin.x + visibleSize.width) / PTM_RATIO, visibleOrigin.y / PTM_RATIO), b2Vec2((visibleOrigin.x + visibleSize.width) / PTM_RATIO, (visibleOrigin.y + visibleSize.height) / PTM_RATIO));
-	groundBody->CreateFixture(&groundBox, 0);
-
-
-	
+	b2Vec2 leftTop(visibleOrigin.x / PTM_RATIO, (visibleOrigin.y + visibleSize.height) / PTM_RATIO);
+	b2Vec2 rightDown((visibleOrigin.x + visibleSize.width) / PTM_RATIO, visibleOrigin.y);
+	Box2dHelper::createEdgeBody(_L2World.world, leftTop, rightDown);
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -88,7 +53,7 @@ void Box2dTestSprite::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.Set(pos.x / PTM_RATIO, pos.y / PTM_RATIO);
 
-	b2Body *body = world->CreateBody(&bodyDef);
+	b2Body *body = _L2World.world->CreateBody(&bodyDef);
 
 	// Define another box shape for our dynamic body.
 	b2PolygonShape dynamicBox;
@@ -133,7 +98,7 @@ void Box2dTestSprite::onDraw()
 
 	auto oldMV = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 	director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewMV);
-	world->DrawDebugData();
+	_L2World.world->DrawDebugData();
 	director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, oldMV);
 }
 
@@ -149,5 +114,5 @@ void Box2dTestSprite::update(float dt)
 
 	// Instruct the world to perform a single step of simulation. It is
 	// generally best to keep the time step and iterations fixed.
-	world->Step(dt, velocityIterations, positionIterations);
+	_L2World.world->Step(dt, velocityIterations, positionIterations);
 }

@@ -2,8 +2,7 @@
 #define __BOX2D_TEST_SPRITE_H__
 
 #include "cocos2d.h"
-#include "Box2D/Box2D.h"
-#include "GLES-Render.h"
+#include "L2Box2dWorld.h"
 
 class Box2dTestSprite : public cocos2d::Node
 {
@@ -25,9 +24,8 @@ private:
 	void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 
 private:
-	b2World* world;
+	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
-	GLESDebugDraw *_debugDraw;
 	cocos2d::CustomCommand _customCommand;
 };
 
