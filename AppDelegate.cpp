@@ -4,6 +4,7 @@
 #include "scripting/lua-bindings/manual/lua_module_register.h"
 
 #include "HelloWorld.h"
+
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
 
@@ -84,8 +85,10 @@ bool AppDelegate::applicationDidFinishLaunching()
     FileUtils::getInstance()->addSearchPath("src");
     FileUtils::getInstance()->addSearchPath("res");
 
-	auto scene = HelloWorld::scene();
-	Director::getInstance()->runWithScene(scene);
+	Scene *pScene = HelloWorld::scene();
+
+	// run
+	Director::getInstance()->runWithScene(pScene);
 	/*
     if (engine->executeScriptFile("main.lua"))
     {

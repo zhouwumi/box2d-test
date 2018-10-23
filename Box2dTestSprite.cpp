@@ -34,11 +34,22 @@ bool Box2dTestSprite::init()
 
 void Box2dTestSprite::initPhysics()
 {
+	_L2World.world->SetGravity(b2Vec2(0, -10.0f));
 	cocos2d::Vec2 visibleOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
 	cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 	b2Vec2 leftTop(visibleOrigin.x / PTM_RATIO, (visibleOrigin.y + visibleSize.height) / PTM_RATIO);
 	b2Vec2 rightDown((visibleOrigin.x + visibleSize.width) / PTM_RATIO, visibleOrigin.y);
 	Box2dHelper::createEdgeBody(_L2World.world, leftTop, rightDown);
+	
+	//b2Vec2 pos((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, (visibleOrigin.y + visibleSize.height / 2) / PTM_RATIO);
+	//Box2dHelper::createStaticBoxBody(_L2World.world, pos, 5.0f, 0.5f);
+
+	b2Vec2 pos((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, (visibleOrigin.y + visibleSize.height / 6) / PTM_RATIO);
+	Box2dHelper::createStaticBoxBody(_L2World.world, pos, 5.0f, 0.1f);
+	
+	b2Vec2 circlePos((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, (visibleOrigin.y + visibleSize.height / 2) / PTM_RATIO);
+	Box2dHelper::createStaticCircleBody(_L2World.world, circlePos, 1.0f);
+	
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -49,23 +60,7 @@ bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 void Box2dTestSprite::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 {
 	cocos2d::Vec2 pos = touch->getLocation();
-	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(pos.x / PTM_RATIO, pos.y / PTM_RATIO);
-
-	b2Body *body = _L2World.world->CreateBody(&bodyDef);
-
-	// Define another box shape for our dynamic body.
-	b2PolygonShape dynamicBox;
-	dynamicBox.SetAsBox(.5f, .5f);//These are mid points for our 1m box
-
-								  // Define the dynamic body fixture.
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &dynamicBox;
-	fixtureDef.density = 1.0f;
-	fixtureDef.friction = 0.3f;
-	fixtureDef.restitution = 0.3f;
-	body->CreateFixture(&fixtureDef);
+	Box2dHelper::createDefaultDynamicBoxBody(_L2World.world, b2Vec2(pos.x / PTM_RATIO, pos.y / PTM_RATIO), 0.5f, 0.5f);
 }
 
 void Box2dTestSprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)

@@ -13,5 +13,10 @@ public:
 	static GLESDebugDraw* createBox2dDebugDraw();
 
 	static b2Body* createEdgeBody(b2World* world, b2Vec2 leftTop, b2Vec2 rightDown);
+	static b2Body* createStaticBoxBody(b2World* world, b2Vec2 position, float halfWidth, float halfHeight);
+	static b2Body* createKinematicBoxBody(b2World* world, b2Vec2 position, float halfWidth, float halfHeight);
+	static b2Body* createDefaultDynamicBoxBody(b2World* world, b2Vec2 position, float halfWidth, float halfHeight);
+
+	static b2Body* createStaticCircleBody(b2World* world, b2Vec2 position, float halfR);
 };
 
