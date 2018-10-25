@@ -36,11 +36,14 @@ private:
 	//²âÊÔÐý×ª¹Ø½Ú
 	void _testRevoluteJoint();
 	void _testRevoluteJoint2();
+	//õÎõÎ°å
+	void _testQiaoQiaoBanRevoluteJoint();
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
 	cocos2d::CustomCommand _customCommand;
 	b2Body* _currentBody;
+	b2RevoluteJoint* _currentRevoluteJoint;
 };
 
 #endif

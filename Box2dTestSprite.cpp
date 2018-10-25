@@ -195,7 +195,7 @@ void Box2dTestSprite::_testRevoluteJoint2()
 	m_bodyA->CreateFixture(&fixtureDef);
 
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.Set(globalCenterPoint.x, globalCenterPoint.y - 5);
+	bodyDef.position.Set(globalCenterPoint.x - 5.0f, globalCenterPoint.y);
 	
 	fixtureDef.shape = &circleShape;
 	fixtureDef.restitution = 0.7f;
@@ -206,12 +206,67 @@ void Box2dTestSprite::_testRevoluteJoint2()
 	b2RevoluteJointDef revoluteJointDef;
 	revoluteJointDef.Initialize(m_bodyA, m_bodyB, globalPoint);
 	revoluteJointDef.collideConnected = true;  //关节的两个刚体是否会相互碰撞
-	revoluteJointDef.referenceAngle = 0;//这个属性暂时还不太理解
+	revoluteJointDef.referenceAngle = 30.0f / 180 * M_PI;//这个属性暂时还不太理解
 	revoluteJointDef.enableLimit = true;  //如果这个没开启，设置lowerAngle和upperAngle不起任何作用。
 	revoluteJointDef.lowerAngle = 60.0f / 180 * M_PI; //最小的角度，bodyB如果到了这个角度，速度马上减为0。
 	revoluteJointDef.upperAngle = 135.0f / 180 * M_PI; //最大的角度,bodyB如果到了这个角度，速度马上减为0。
+	///revoluteJointDef.referenceAngle = -90 / 180 * M_PI;
 	b2RevoluteJoint* m_joint = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef);
-	m_bodyB->ApplyForce(b2Vec2(100.0f, 0.0f), m_bodyB->GetPosition(), true);
+	_currentRevoluteJoint = m_joint;
+}
+
+void Box2dTestSprite::_testQiaoQiaoBanRevoluteJoint()
+{
+	cocos2d::Vec2 visibleOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
+	cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+	b2Vec2 globalCenterPoint((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, (visibleOrigin.y + visibleSize.height / 2) / PTM_RATIO);
+	b2Vec2 buttomCenter(globalCenterPoint.x, globalCenterPoint.y - 100.0f / PTM_RATIO);
+
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_staticBody;
+	bodyDef.position = buttomCenter;
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.density = 1;
+
+	b2PolygonShape triangleShape;
+	std::vector<b2Vec2> points;
+	b2Vec2 left(-10.0 / PTM_RATIO, 0);
+	b2Vec2 right(10.0 / PTM_RATIO, 0);
+	b2Vec2 top(0, 20.0f / PTM_RATIO);
+	points.emplace_back(left);
+	points.emplace_back(right);
+	points.emplace_back(top);
+	triangleShape.Set(&points[0], points.size());
+	fixtureDef.shape = &triangleShape;
+
+	b2Body* m_triangleBody = _L2World.world->CreateBody(&bodyDef);
+	m_triangleBody->CreateFixture(&fixtureDef);
+
+	
+	float halfBoxWidth = 5.0f;
+	float halfBoxHeight = 0.05f;
+	b2PolygonShape boxShape;
+	boxShape.SetAsBox(halfBoxWidth, halfBoxHeight);
+
+	bodyDef.position.Set(buttomCenter.x, buttomCenter.y + top.y);
+	fixtureDef.shape = &boxShape;
+	bodyDef.type = b2_dynamicBody;
+	b2Body* m_boxBody = _L2World.world->CreateBody(&bodyDef);
+	m_boxBody->CreateFixture(&fixtureDef);
+
+
+	b2Vec2 globalPoint = m_boxBody->GetWorldPoint(b2Vec2(0, 0));
+	b2RevoluteJointDef revoluteJointDef;
+	revoluteJointDef.Initialize(m_boxBody, m_triangleBody, globalPoint);
+	
+	revoluteJointDef.enableLimit = true;  //如果这个没开启，设置lowerAngle和upperAngle不起任何作用。
+	revoluteJointDef.lowerAngle = -15.0f / 180 * M_PI; //最小的角度，bodyB如果到了这个角度，速度马上减为0。
+	revoluteJointDef.upperAngle = 15.0f / 180 * M_PI; //最大的角度,bodyB如果到了这个角度，速度马上减为0。
+									   ///revoluteJointDef.referenceAngle = -90 / 180 * M_PI;
+	
+	b2RevoluteJoint* m_joint = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef);
+	_currentRevoluteJoint = m_joint; 
 }
 
 void Box2dTestSprite::initPhysics()
@@ -235,7 +290,8 @@ void Box2dTestSprite::initPhysics()
 	//_testChainShape();
 	//_testCreateFixture();
 	//_testRevoluteJoint();
-	_testRevoluteJoint2();
+	//_testRevoluteJoint2();
+	_testQiaoQiaoBanRevoluteJoint();
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -248,6 +304,7 @@ void Box2dTestSprite::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 	cocos2d::Vec2 pos = touch->getLocation();
 	Box2dHelper::createDefaultDynamicBoxBody(_L2World.world, b2Vec2(pos.x / PTM_RATIO, pos.y / PTM_RATIO), 0.5f, 0.5f);
 
+	//cocos2d::log("current degree: %f", _currentRevoluteJoint->GetJointAngle() * 180 / M_PI);
 	/***************b2CircleShape******************/
 	//测试圆形的m_p
 	//点击屏幕，圆形会往下运动,圆形会变大。
