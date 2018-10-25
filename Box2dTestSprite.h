@@ -22,11 +22,25 @@ private:
 	
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+	//测试圆形shape
+	void _testCircleShape();
+	//测试多边形shape
+	void _testPolygonShape();
+	//测试线段shape
+	void _testEdgeShape();
+	//测试线条shape
+	void _testChainShape();
 
+	void _testCreateFixture();
+	
+	//测试旋转关节
+	void _testRevoluteJoint();
+	void _testRevoluteJoint2();
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
 	cocos2d::CustomCommand _customCommand;
+	b2Body* _currentBody;
 };
 
 #endif

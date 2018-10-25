@@ -18,5 +18,8 @@ public:
 	static b2Body* createDefaultDynamicBoxBody(b2World* world, b2Vec2 position, float halfWidth, float halfHeight);
 
 	static b2Body* createStaticCircleBody(b2World* world, b2Vec2 position, float halfR);
+	static b2Body* createStaticPolygonBody(b2World* world, b2Vec2 position, std::vector<b2Vec2> releativePoints);
+	static b2Body* createStaticEdgeBody(b2World* world, b2Vec2 startPoint, b2Vec2 endPoint);
+	static b2Body* createStaticChainBody(b2World* world, b2Vec2 position, std::vector<b2Vec2> releativePoints);
 };
 

@@ -26,7 +26,9 @@ GLESDebugDraw* Box2dHelper::createBox2dDebugDraw()
 {
 	GLESDebugDraw* debugDraw = new GLESDebugDraw(32);
 	uint32 flags = 0;
-	flags += b2Draw::e_shapeBit;
+	flags += b2Draw::e_shapeBit; //显示刚体的形状
+	flags += b2Draw::e_centerOfMassBit;  //显示刚体的重心
+	flags += b2Draw::e_jointBit; //显示关节
 	debugDraw->SetFlags(flags);
 	return debugDraw;
 }
@@ -85,9 +87,79 @@ b2Body* Box2dHelper::createStaticCircleBody(b2World* world, b2Vec2 position, flo
 
 	b2CircleShape circleShape;
 	circleShape.m_radius = halfR;
+	circleShape.m_p.x = 0.0f / PTM_RATIO;
+	circleShape.m_p.y = 300.0f / PTM_RATIO;
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &circleShape;
+	staticBody->CreateFixture(&fixtureDef);
+	return staticBody;
+}
+
+b2Body* Box2dHelper::createStaticPolygonBody(b2World* world, b2Vec2 position, std::vector<b2Vec2> releativePoints)
+{
+	assert(releativePoints.size() > 0);
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_staticBody;
+	bodyDef.position = position;
+
+	b2Body* staticBody = world->CreateBody(&bodyDef);
+	b2PolygonShape polygonShape;
+	b2Vec2* pPoints = &releativePoints[0];
+	{
+		float degree = 30.f;
+		float angle = degree / 180 * M_PI;
+		//SetAsBox(hx, hy, center, angle)：设置矩形的半宽，半高，矩形中心点，旋转角度。
+		//polygonShape.SetAsBox(1.0f, 2.0f, b2Vec2(4.0f, 4.0f), angle);
+	}
+	{
+		//SetAsBox(hx, hy)：直接设置矩形的半宽和半高。
+		//polygonShape.SetAsBox(1.0f, 2.0f);
+	}
+	{
+		//Set方法：设置多边形的所有点，点的数量。
+		polygonShape.Set(pPoints, releativePoints.size()); //这里的点的坐标是本地坐标系下的。以position为参考的。
+	}
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &polygonShape;
+	staticBody->CreateFixture(&fixtureDef);
+	return staticBody;
+}
+
+//线段shape，会和其他形状的刚体参与碰撞。不会和线段形状的刚体碰撞。
+b2Body* Box2dHelper::createStaticEdgeBody(b2World* world, b2Vec2 startPoint, b2Vec2 endPoint)
+{
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_kinematicBody;
+	b2Body* staticBody = world->CreateBody(&bodyDef);
+
+	b2EdgeShape edgeShape;
+	edgeShape.Set(startPoint, endPoint);
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &edgeShape;
+	staticBody->CreateFixture(&fixtureDef);
+	return staticBody;
+}
+
+b2Body* Box2dHelper::createStaticChainBody(b2World* world, b2Vec2 position, std::vector<b2Vec2> releativePoints)
+{
+	assert(releativePoints.size() > 0);
+	b2BodyDef bodyDef;
+	bodyDef.type = b2_staticBody;
+	bodyDef.position = position;
+
+	b2Body* staticBody = world->CreateBody(&bodyDef);
+	b2ChainShape chainShape;
+	b2Vec2* pPoints = &releativePoints[0];
+	//CreateChain：顶点不会闭合
+	//chainShape.CreateChain(pPoints, releativePoints.size());
+	//CreateLoop：会形成封闭线条,第一个和最后一个会连接起来
+	chainShape.CreateLoop(pPoints, releativePoints.size());
+
+	b2FixtureDef fixtureDef;
+	fixtureDef.shape = &chainShape;
 	staticBody->CreateFixture(&fixtureDef);
 	return staticBody;
 }
@@ -170,4 +242,9 @@ density
 friction
 restitution:弹性系数，0-1之间，数值越大，弹性越大。
 isSensor: 是否作为感应使用。如果为true,不会进行碰撞模拟，不会影响任何速度。
+*/
+
+/* 圆形b2CircleShape
+刚体的本地坐标系统的原点就是其当前的坐标位置。
+m_p：圆形的质心的本地坐标。如果设置为（0, 300），将看到圆形出现在圆位置的正上方300像素位置。
 */
