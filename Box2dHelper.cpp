@@ -87,8 +87,8 @@ b2Body* Box2dHelper::createStaticCircleBody(b2World* world, b2Vec2 position, flo
 
 	b2CircleShape circleShape;
 	circleShape.m_radius = halfR;
-	circleShape.m_p.x = 0.0f / PTM_RATIO;
-	circleShape.m_p.y = 300.0f / PTM_RATIO;
+	//circleShape.m_p.x = 0.0f / PTM_RATIO;
+	//circleShape.m_p.y = 300.0f / PTM_RATIO;
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &circleShape;

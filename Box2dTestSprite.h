@@ -38,6 +38,7 @@ private:
 	void _testRevoluteJoint2();
 	//õÎõÎ°å
 	void _testQiaoQiaoBanRevoluteJoint();
+	void _testXiaoCheRevoluteJoint();
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;

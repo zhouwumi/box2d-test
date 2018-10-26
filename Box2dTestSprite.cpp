@@ -264,9 +264,53 @@ void Box2dTestSprite::_testQiaoQiaoBanRevoluteJoint()
 	revoluteJointDef.lowerAngle = -15.0f / 180 * M_PI; //最小的角度，bodyB如果到了这个角度，速度马上减为0。
 	revoluteJointDef.upperAngle = 15.0f / 180 * M_PI; //最大的角度,bodyB如果到了这个角度，速度马上减为0。
 									   ///revoluteJointDef.referenceAngle = -90 / 180 * M_PI;
-	
 	b2RevoluteJoint* m_joint = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef);
 	_currentRevoluteJoint = m_joint; 
+}
+
+void Box2dTestSprite::_testXiaoCheRevoluteJoint()
+{
+	cocos2d::Vec2 visibleOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
+	cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+	b2Vec2 globalCenterPoint((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, (visibleOrigin.y + visibleSize.height / 2) / PTM_RATIO);
+	b2Vec2 buttomCenter((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, 0);
+
+	b2Body* groundBody = Box2dHelper::createStaticBoxBody(_L2World.world, buttomCenter, (float)visibleSize.width / 2 / PTM_RATIO, 2.0f);
+	groundBody->SetType(b2_dynamicBody);
+
+	buttomCenter.y += 1.0f;
+	float halfCircleWidth = 0.5f;
+	float circleDistance = 2.0f;
+	b2Vec2 leftCirclePos(buttomCenter.x - circleDistance, buttomCenter.y + halfCircleWidth);
+	b2Vec2 rightCirclePos(buttomCenter.x + circleDistance, buttomCenter.y + halfCircleWidth);
+	b2Body* circleBody1 = Box2dHelper::createStaticCircleBody(_L2World.world, leftCirclePos, halfCircleWidth);
+	circleBody1->SetType(b2_dynamicBody);
+	circleBody1->GetFixtureList()->SetFriction(10.0f);
+	b2Body* circleBody2 = Box2dHelper::createStaticCircleBody(_L2World.world, rightCirclePos, halfCircleWidth);
+	circleBody2->SetType(b2_dynamicBody);
+	float halfBoxHeight = 0.2f;
+	float halfBoxWidth = circleDistance + halfCircleWidth;
+	b2Vec2 boxPos(buttomCenter.x, buttomCenter.y + halfCircleWidth * 2 + halfBoxHeight);
+	b2Body* boxBody = Box2dHelper::createStaticBoxBody(_L2World.world, boxPos, halfBoxWidth, halfBoxHeight);
+	boxBody->SetType(b2_dynamicBody);
+
+	b2Vec2 revolutePoint = circleBody1->GetWorldPoint(b2Vec2(0, 0));
+	b2RevoluteJointDef revoluteJointDef;
+	revoluteJointDef.collideConnected = false;
+	revoluteJointDef.enableMotor = true;
+	revoluteJointDef.maxMotorTorque = 50.0f;
+	revoluteJointDef.motorSpeed = M_PI / 10.0f * 30.0f;
+	revoluteJointDef.Initialize(boxBody, circleBody1, revolutePoint);
+	b2RevoluteJoint* m_joint = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef);
+
+	b2RevoluteJointDef revoluteJointDef2;
+	revoluteJointDef2.collideConnected = false;
+	revoluteJointDef2.enableMotor = false;
+	revolutePoint = circleBody2->GetWorldPoint(b2Vec2(0, 0));
+	revoluteJointDef2.Initialize(boxBody, circleBody2, revolutePoint);
+	_L2World.world->CreateJoint(&revoluteJointDef2);
+	_currentRevoluteJoint = m_joint;
+
 }
 
 void Box2dTestSprite::initPhysics()
@@ -291,7 +335,8 @@ void Box2dTestSprite::initPhysics()
 	//_testCreateFixture();
 	//_testRevoluteJoint();
 	//_testRevoluteJoint2();
-	_testQiaoQiaoBanRevoluteJoint();
+	//_testQiaoQiaoBanRevoluteJoint();
+	_testXiaoCheRevoluteJoint();
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -302,8 +347,10 @@ bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 void Box2dTestSprite::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 {
 	cocos2d::Vec2 pos = touch->getLocation();
-	Box2dHelper::createDefaultDynamicBoxBody(_L2World.world, b2Vec2(pos.x / PTM_RATIO, pos.y / PTM_RATIO), 0.5f, 0.5f);
+	//Box2dHelper::createDefaultDynamicBoxBody(_L2World.world, b2Vec2(pos.x / PTM_RATIO, pos.y / PTM_RATIO), 0.5f, 0.5f);
 
+	_currentRevoluteJoint->EnableMotor(true);
+	_currentRevoluteJoint->SetMotorSpeed(M_PI / 10.0f * 30.0f);
 	//cocos2d::log("current degree: %f", _currentRevoluteJoint->GetJointAngle() * 180 / M_PI);
 	/***************b2CircleShape******************/
 	//测试圆形的m_p
