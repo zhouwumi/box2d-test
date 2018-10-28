@@ -12,6 +12,14 @@ Box2dHelper::~Box2dHelper()
 {
 }
 
+b2FixtureDef& Box2dHelper::getFixtureDef()
+{
+	b2FixtureDef def;
+	def.density = 3;
+	def.friction = 0.3;
+	def.restitution = 0.2;
+	return def;
+}
 
 b2World* Box2dHelper::createWorld(b2Vec2 gravity)
 {
@@ -62,35 +70,33 @@ b2Body* Box2dHelper::createEdgeBody(b2World* world, b2Vec2 leftTop, b2Vec2 right
 	return groundBody;
 }
 
-b2Body* Box2dHelper::createStaticBoxBody(b2World* world, b2Vec2 position, float halfWidth, float halfHeight)
+b2Body* Box2dHelper::createStaticBoxBody(b2World* world, b2Vec2 position, float halfWidth, float halfHeight, b2BodyType type)
 {
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_staticBody;
+	bodyDef.type = type;
 	bodyDef.position.Set(position.x, position.y);
 	b2Body* staticBody = world->CreateBody(&bodyDef);
 
 	b2PolygonShape staticBox;
 	staticBox.SetAsBox(halfWidth, halfHeight);//These are mid points for our 1m box
 
-	b2FixtureDef fixtureDef;
+	b2FixtureDef fixtureDef = Box2dHelper::getFixtureDef();
 	fixtureDef.shape = &staticBox;
 	staticBody->CreateFixture(&fixtureDef);
 	return staticBody;
 }
 
-b2Body* Box2dHelper::createStaticCircleBody(b2World* world, b2Vec2 position, float halfR)
+b2Body* Box2dHelper::createStaticCircleBody(b2World* world, b2Vec2 position, float halfR, b2BodyType type)
 {
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_staticBody;
+	bodyDef.type = type;
 	bodyDef.position.Set(position.x, position.y);
 	b2Body* staticBody = world->CreateBody(&bodyDef);
 
 	b2CircleShape circleShape;
 	circleShape.m_radius = halfR;
-	//circleShape.m_p.x = 0.0f / PTM_RATIO;
-	//circleShape.m_p.y = 300.0f / PTM_RATIO;
 
-	b2FixtureDef fixtureDef;
+	b2FixtureDef fixtureDef = Box2dHelper::getFixtureDef();
 	fixtureDef.shape = &circleShape;
 	staticBody->CreateFixture(&fixtureDef);
 	return staticBody;
@@ -224,7 +230,37 @@ b2Body* Box2dHelper::createDefaultDynamicBoxBody(b2World* world, b2Vec2 position
 	return body;
 }
 
+float Box2dHelper::getPTMRatio()
+{
+	return PTM_RATIO;
+}
 
+float arcSimulateAnglePrecise = 10.0f / 180 * M_PI;
+b2PolygonShape Box2dHelper::createSemicircle(float width, float height)
+{
+	width /= PTM_RATIO;
+	height /= PTM_RATIO;
+
+	float r = (height * height + width * width / 4) / height / 2;
+	float angleSize = acosf((r - height) / r) * 2;
+	assert(angleSize >= arcSimulateAnglePrecise);
+	std::vector<b2Vec2> verticesList;
+	b2Vec2 tempVertex = b2Vec2_zero;
+	int verticesCount = floorf(M_PI * 2 / arcSimulateAnglePrecise * angleSize / M_PI / 2);
+	for (float i = 0; i < verticesCount; i++)
+	{
+		tempVertex.x = r * cosf(arcSimulateAnglePrecise * i + (M_PI - angleSize) / 2 + M_PI);
+		tempVertex.y = r * sinf(arcSimulateAnglePrecise * i + (M_PI - angleSize) / 2 + M_PI) - r + height;
+		verticesList.emplace_back(tempVertex);
+	}
+	tempVertex.x = r * cosf(angleSize + (M_PI - angleSize ) / 2 + M_PI);
+	tempVertex.y = r * sinf(angleSize + (M_PI - angleSize) / 2 + M_PI) - r + height;
+	verticesList.emplace_back(tempVertex);
+
+	b2PolygonShape shape;
+	shape.Set(&verticesList[0], verticesList.size());
+	return shape;
+}
 /*
 b2BodyDef:
 type

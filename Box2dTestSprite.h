@@ -4,6 +4,8 @@
 #include "cocos2d.h"
 #include "L2Box2dWorld.h"
 
+#include "BaseTestCase.h"
+
 class Box2dTestSprite : public cocos2d::Node
 {
 public:
@@ -39,12 +41,21 @@ private:
 	//ıŒıŒ∞Â
 	void _testQiaoQiaoBanRevoluteJoint();
 	void _testXiaoCheRevoluteJoint();
+
+	//≤‚ ‘Applyœµ¡–∫Ø ˝
+	void _testApplyFunction();
+
+	void _testMassData();
+
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
 	cocos2d::CustomCommand _customCommand;
 	b2Body* _currentBody;
 	b2RevoluteJoint* _currentRevoluteJoint;
+
+private:
+	BaseTestCase* testCase;
 };
 
 #endif

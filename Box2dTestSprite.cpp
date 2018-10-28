@@ -1,17 +1,22 @@
 #include "Box2dTestSprite.h"
 #include "Box2dHelper.h"
+#include "test_case/b2RevoluteJointTestCase.h"
+#include "test_case/ApplyFunctionTestCase.h"
+#include "test_case/MassDataTestCase.h"
 
 #define PTM_RATIO 32
 
 using namespace cocos2d;
 
-Box2dTestSprite::Box2dTestSprite()
+Box2dTestSprite::Box2dTestSprite():
+	testCase(nullptr)
 {
 
 }
 
 Box2dTestSprite::~Box2dTestSprite()
 {
+	CC_SAFE_DELETE(testCase);
 }
 
 bool Box2dTestSprite::init()
@@ -270,47 +275,20 @@ void Box2dTestSprite::_testQiaoQiaoBanRevoluteJoint()
 
 void Box2dTestSprite::_testXiaoCheRevoluteJoint()
 {
-	cocos2d::Vec2 visibleOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
-	cocos2d::Size visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
-	b2Vec2 globalCenterPoint((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, (visibleOrigin.y + visibleSize.height / 2) / PTM_RATIO);
-	b2Vec2 buttomCenter((visibleOrigin.x + visibleSize.width / 2) / PTM_RATIO, 0);
+	testCase = new b2RevoluteJointTestCase(this->_L2World);
+	testCase->test();
+}
 
-	b2Body* groundBody = Box2dHelper::createStaticBoxBody(_L2World.world, buttomCenter, (float)visibleSize.width / 2 / PTM_RATIO, 2.0f);
-	groundBody->SetType(b2_dynamicBody);
+void Box2dTestSprite::_testApplyFunction()
+{
+	testCase = new ApplyFunctionTestCase(this->_L2World);
+	testCase->test();
+}
 
-	buttomCenter.y += 1.0f;
-	float halfCircleWidth = 0.5f;
-	float circleDistance = 2.0f;
-	b2Vec2 leftCirclePos(buttomCenter.x - circleDistance, buttomCenter.y + halfCircleWidth);
-	b2Vec2 rightCirclePos(buttomCenter.x + circleDistance, buttomCenter.y + halfCircleWidth);
-	b2Body* circleBody1 = Box2dHelper::createStaticCircleBody(_L2World.world, leftCirclePos, halfCircleWidth);
-	circleBody1->SetType(b2_dynamicBody);
-	circleBody1->GetFixtureList()->SetFriction(10.0f);
-	b2Body* circleBody2 = Box2dHelper::createStaticCircleBody(_L2World.world, rightCirclePos, halfCircleWidth);
-	circleBody2->SetType(b2_dynamicBody);
-	float halfBoxHeight = 0.2f;
-	float halfBoxWidth = circleDistance + halfCircleWidth;
-	b2Vec2 boxPos(buttomCenter.x, buttomCenter.y + halfCircleWidth * 2 + halfBoxHeight);
-	b2Body* boxBody = Box2dHelper::createStaticBoxBody(_L2World.world, boxPos, halfBoxWidth, halfBoxHeight);
-	boxBody->SetType(b2_dynamicBody);
-
-	b2Vec2 revolutePoint = circleBody1->GetWorldPoint(b2Vec2(0, 0));
-	b2RevoluteJointDef revoluteJointDef;
-	revoluteJointDef.collideConnected = false;
-	revoluteJointDef.enableMotor = true;
-	revoluteJointDef.maxMotorTorque = 50.0f;
-	revoluteJointDef.motorSpeed = M_PI / 10.0f * 30.0f;
-	revoluteJointDef.Initialize(boxBody, circleBody1, revolutePoint);
-	b2RevoluteJoint* m_joint = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef);
-
-	b2RevoluteJointDef revoluteJointDef2;
-	revoluteJointDef2.collideConnected = false;
-	revoluteJointDef2.enableMotor = false;
-	revolutePoint = circleBody2->GetWorldPoint(b2Vec2(0, 0));
-	revoluteJointDef2.Initialize(boxBody, circleBody2, revolutePoint);
-	_L2World.world->CreateJoint(&revoluteJointDef2);
-	_currentRevoluteJoint = m_joint;
-
+void Box2dTestSprite::_testMassData()
+{
+	testCase = new MassDataTestCase(this->_L2World);
+	testCase->test();
 }
 
 void Box2dTestSprite::initPhysics()
@@ -336,21 +314,34 @@ void Box2dTestSprite::initPhysics()
 	//_testRevoluteJoint();
 	//_testRevoluteJoint2();
 	//_testQiaoQiaoBanRevoluteJoint();
-	_testXiaoCheRevoluteJoint();
+	//_testXiaoCheRevoluteJoint();
+	//_testApplyFunction();
+	_testMassData();
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 {
+	if (testCase) {
+		testCase->onTouchBegin(touch->getLocation());
+	}
 	return true;
 }
 
 void Box2dTestSprite::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 {
 	cocos2d::Vec2 pos = touch->getLocation();
+	if (testCase) {
+		testCase->onTouchEnd(touch->getLocation());
+	}
+	
 	//Box2dHelper::createDefaultDynamicBoxBody(_L2World.world, b2Vec2(pos.x / PTM_RATIO, pos.y / PTM_RATIO), 0.5f, 0.5f);
 
+	/*
 	_currentRevoluteJoint->EnableMotor(true);
 	_currentRevoluteJoint->SetMotorSpeed(M_PI / 10.0f * 30.0f);
+
+
+	_currentBody->ApplyForce(b2Vec2(100.0f, 0.0f), _currentBody->GetWorldPoint(b2Vec2(-0.5f, 0.0f)), true);*/
 	//cocos2d::log("current degree: %f", _currentRevoluteJoint->GetJointAngle() * 180 / M_PI);
 	/***************b2CircleShape******************/
 	//²âÊÔÔ²ÐÎµÄm_p
@@ -434,6 +425,10 @@ void Box2dTestSprite::update(float dt)
 	//of the simulation, however, we are using a variable time step here.
 	//You need to make an informed choice, the following URL is useful
 	//http://gafferongames.com/game-physics/fix-your-timestep/
+	
+	if (testCase) {
+		testCase->step();
+	}
 
 	int velocityIterations = 8;
 	int positionIterations = 1;
@@ -441,4 +436,6 @@ void Box2dTestSprite::update(float dt)
 	// Instruct the world to perform a single step of simulation. It is
 	// generally best to keep the time step and iterations fixed.
 	_L2World.world->Step(dt, velocityIterations, positionIterations);
+	_L2World.world->ClearForces();
+	
 }
