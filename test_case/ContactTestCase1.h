@@ -1,12 +1,11 @@
-class MyContactListener1;
-
 #ifndef __CONTACT_TEST_CASE_H__
 #define __CONTACT_TEST_CASE_H__
 
 #include "BaseTestCase.h"
 #include "L2Box2dWorld.h"
 #include "cocos2d.h"
-#include "MyContactListener1.h"
+
+class MyContactListener1;
 
 class ContactTestCase1 : public BaseTestCase
 {
