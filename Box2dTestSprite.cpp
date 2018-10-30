@@ -3,6 +3,7 @@
 #include "test_case/b2RevoluteJointTestCase.h"
 #include "test_case/ApplyFunctionTestCase.h"
 #include "test_case/MassDataTestCase.h"
+#include "test_case/ContactTestCase1.h"
 
 #define PTM_RATIO 32
 
@@ -275,19 +276,25 @@ void Box2dTestSprite::_testQiaoQiaoBanRevoluteJoint()
 
 void Box2dTestSprite::_testXiaoCheRevoluteJoint()
 {
-	testCase = new b2RevoluteJointTestCase(this->_L2World);
+	testCase = new b2RevoluteJointTestCase(&this->_L2World);
 	testCase->test();
 }
 
 void Box2dTestSprite::_testApplyFunction()
 {
-	testCase = new ApplyFunctionTestCase(this->_L2World);
+	testCase = new ApplyFunctionTestCase(&this->_L2World);
 	testCase->test();
 }
 
 void Box2dTestSprite::_testMassData()
 {
-	testCase = new MassDataTestCase(this->_L2World);
+	testCase = new MassDataTestCase(&this->_L2World);
+	testCase->test();
+}
+
+void Box2dTestSprite::_testContactTestCase1()
+{
+	testCase = new ContactTestCase1(&this->_L2World);
 	testCase->test();
 }
 
@@ -316,7 +323,8 @@ void Box2dTestSprite::initPhysics()
 	//_testQiaoQiaoBanRevoluteJoint();
 	//_testXiaoCheRevoluteJoint();
 	//_testApplyFunction();
-	_testMassData();
+	//_testMassData();
+	_testContactTestCase1();
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)

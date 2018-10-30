@@ -8,8 +8,8 @@
 class MassDataTestCase : public BaseTestCase
 {
 public:
-	MassDataTestCase(L2Box2dWorld& l2World);
-	~MassDataTestCase();
+	MassDataTestCase(L2Box2dWorld* l2World);
+	virtual ~MassDataTestCase();
 
 	virtual void test() override;
 	virtual void onTouchBegin(cocos2d::Vec2 position) override;
@@ -19,7 +19,7 @@ public:
 private:
 	void createBody();
 private:
-	L2Box2dWorld _L2World;
+	L2Box2dWorld* _L2World;
 
 	b2Body* _testBody;
 };

@@ -7,8 +7,8 @@
 class ApplyFunctionTestCase : public BaseTestCase
 {
 public:
-	ApplyFunctionTestCase(L2Box2dWorld& l2World);
-	~ApplyFunctionTestCase();
+	ApplyFunctionTestCase(L2Box2dWorld* l2World);
+	virtual ~ApplyFunctionTestCase();
 
 	virtual void test() override;
 	virtual void onTouchBegin(cocos2d::Vec2 position) override;
@@ -23,7 +23,7 @@ private:
 	void limitAngularVelocity();
 
 private:
-	L2Box2dWorld _L2World;
+	L2Box2dWorld* _L2World;
 	b2Body* _circleBody;
 	bool _isTouching;
 	b2Vec2 _force;

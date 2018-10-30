@@ -3,7 +3,7 @@
 #include "cocos2d.h"
 
 
-MassDataTestCase::MassDataTestCase(L2Box2dWorld& l2World):
+MassDataTestCase::MassDataTestCase(L2Box2dWorld* l2World):
 	_L2World(l2World)
 {
 }
@@ -26,7 +26,7 @@ void MassDataTestCase::createBody()
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position = semCirclePosition;
 
-	b2Body* testBody = _L2World.world->CreateBody(&bodyDef);
+	b2Body* testBody = _L2World->world->CreateBody(&bodyDef);
 
 	b2PolygonShape semiCircleShape = Box2dHelper::createSemicircle(width, height);
 	

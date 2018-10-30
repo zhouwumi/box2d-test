@@ -12,7 +12,7 @@ motorSpeed：转速；转速越大，小车运动的越快。
 还存在一个疑问：快速点击，小车的速度会越来越快？？？？？
 以后来阅读源码的时候分析吧
 */
-b2RevoluteJointTestCase::b2RevoluteJointTestCase(L2Box2dWorld& l2World):
+b2RevoluteJointTestCase::b2RevoluteJointTestCase(L2Box2dWorld* l2World):
 	_L2World(l2World),
 	_isTouching(false),
 	_carBody(nullptr),
@@ -39,7 +39,7 @@ void b2RevoluteJointTestCase::test()
 
 
 	float halfGroupHeight = 0.5f;
-	b2Body* groundBody = Box2dHelper::createStaticBoxBody(_L2World.world, b2Vec2(buttomCenter.x, buttomCenter.y + halfGroupHeight), (float)visibleSize.width / 2 / PTM_RATIO - 0.1f, halfGroupHeight);
+	b2Body* groundBody = Box2dHelper::createStaticBoxBody(_L2World->world, b2Vec2(buttomCenter.x, buttomCenter.y + halfGroupHeight), (float)visibleSize.width / 2 / PTM_RATIO - 0.1f, halfGroupHeight);
 	groundBody->SetType(b2_dynamicBody);
 
 	buttomCenter.y += halfGroupHeight * 2;
@@ -47,13 +47,13 @@ void b2RevoluteJointTestCase::test()
 	float circleDistance = 2.0f;
 	b2Vec2 leftCirclePos(buttomCenter.x - circleDistance, buttomCenter.y + halfCircleWidth);
 	b2Vec2 rightCirclePos(buttomCenter.x + circleDistance, buttomCenter.y + halfCircleWidth);
-	b2Body* circleBody1 = Box2dHelper::createStaticCircleBody(_L2World.world, leftCirclePos, halfCircleWidth, b2_dynamicBody);
+	b2Body* circleBody1 = Box2dHelper::createStaticCircleBody(_L2World->world, leftCirclePos, halfCircleWidth, b2_dynamicBody);
 	circleBody1->GetFixtureList()->SetFriction(100.0f);
-	b2Body* circleBody2 = Box2dHelper::createStaticCircleBody(_L2World.world, rightCirclePos, halfCircleWidth, b2_dynamicBody);
+	b2Body* circleBody2 = Box2dHelper::createStaticCircleBody(_L2World->world, rightCirclePos, halfCircleWidth, b2_dynamicBody);
 	float halfBoxHeight = 0.2f;
 	float halfBoxWidth = circleDistance + halfCircleWidth;
 	b2Vec2 boxPos(buttomCenter.x, buttomCenter.y + halfCircleWidth * 2 + halfBoxHeight);
-	b2Body* boxBody = Box2dHelper::createStaticBoxBody(_L2World.world, boxPos, halfBoxWidth, halfBoxHeight, b2_dynamicBody);
+	b2Body* boxBody = Box2dHelper::createStaticBoxBody(_L2World->world, boxPos, halfBoxWidth, halfBoxHeight, b2_dynamicBody);
 
 	b2Vec2 revolutePoint = circleBody1->GetPosition();
 	b2RevoluteJointDef revoluteJointDef;
@@ -62,14 +62,14 @@ void b2RevoluteJointTestCase::test()
 	revoluteJointDef.maxMotorTorque = 50.0f;
 	revoluteJointDef.motorSpeed = M_PI / 6;
 	revoluteJointDef.Initialize(boxBody, circleBody1, revolutePoint);
-	_revoluteJointA = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef);
+	_revoluteJointA = (b2RevoluteJoint*)_L2World->world->CreateJoint(&revoluteJointDef);
 
 	b2RevoluteJointDef revoluteJointDef2;
 	revoluteJointDef2.collideConnected = false;
 	revoluteJointDef2.enableMotor = false;
 	revolutePoint = circleBody2->GetPosition();
 	revoluteJointDef2.Initialize(boxBody, circleBody2, revolutePoint);
-	_revoluteJointB = (b2RevoluteJoint*)_L2World.world->CreateJoint(&revoluteJointDef2);
+	_revoluteJointB = (b2RevoluteJoint*)_L2World->world->CreateJoint(&revoluteJointDef2);
 
 	_carBody = boxBody;
 	_circleBodyA = circleBody1;

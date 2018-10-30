@@ -7,8 +7,8 @@
 class b2RevoluteJointTestCase: public BaseTestCase
 {
 public:
-	b2RevoluteJointTestCase(L2Box2dWorld& l2World);
-	~b2RevoluteJointTestCase();
+	b2RevoluteJointTestCase(L2Box2dWorld* l2World);
+	virtual ~b2RevoluteJointTestCase();
 
 	virtual void test() override;
 
@@ -18,7 +18,7 @@ public:
 	virtual void step() override;
 
 private:
-	L2Box2dWorld _L2World;
+	L2Box2dWorld* _L2World;
 	b2Body* _carBody;
 	b2Body* _circleBodyA;
 	b2Body* _circleBodyB;

@@ -46,6 +46,9 @@ private:
 	void _testApplyFunction();
 
 	void _testMassData();
+	
+	//测试万有引力
+	void _testContactTestCase1();
 
 private:
 	L2Box2dWorld _L2World;

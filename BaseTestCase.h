@@ -9,7 +9,7 @@ class BaseTestCase
 {
 public:
 	BaseTestCase();
-	~BaseTestCase();
+	virtual ~BaseTestCase();
 	virtual void test();
 
 	virtual void onTouchBegin(cocos2d::Vec2 position);
