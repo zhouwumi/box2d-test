@@ -1,7 +1,7 @@
 #include "ContactTestCase1.h"
 #include "Box2dHelper.h"
 
-#include "MyContactListener1.h"
+#include "contact/MyContactListener1.h"
 ContactTestCase1::ContactTestCase1(L2Box2dWorld* l2World) :
 	_L2World(l2World)
 {

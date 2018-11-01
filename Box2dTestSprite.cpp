@@ -4,6 +4,9 @@
 #include "test_case/ApplyFunctionTestCase.h"
 #include "test_case/MassDataTestCase.h"
 #include "test_case/ContactTestCase1.h"
+#include "test_case/ImpluseTestCase.h"
+#include "test_case/OneWayWallTestCase.h"
+#include "test_case/b2MouseJointTestCase.h"
 
 #define PTM_RATIO 32
 
@@ -33,8 +36,15 @@ bool Box2dTestSprite::init()
 	listener->setSwallowTouches(true);
 	listener->onTouchBegan = CC_CALLBACK_2(Box2dTestSprite::onTouchBegan, this);
 	listener->onTouchEnded = CC_CALLBACK_2(Box2dTestSprite::onTouchEnded, this);
+	listener->onTouchMoved = CC_CALLBACK_2(Box2dTestSprite::onTouchMoved, this);
 
 	_eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
+
+	auto keyListener = EventListenerKeyboard::create();
+	keyListener->setEnabled(true);
+	keyListener->onKeyReleased = CC_CALLBACK_2(Box2dTestSprite::onKeyReleased, this);
+	_eventDispatcher->addEventListenerWithFixedPriority(keyListener, 1);
+
 	return true;
 }
 
@@ -298,6 +308,24 @@ void Box2dTestSprite::_testContactTestCase1()
 	testCase->test();
 }
 
+void Box2dTestSprite::_testImpluseTestCase()
+{
+	testCase = new ImpluseTestCase(&this->_L2World);
+	testCase->test();
+}
+
+void Box2dTestSprite::_testOneWayWallTestCase()
+{
+	testCase = new OneWayWallTestCase(&this->_L2World);
+	testCase->test();
+}
+
+void Box2dTestSprite::_testMouseJoint()
+{
+	testCase = new b2MouseJointTestCase(&this->_L2World);
+	testCase->test();
+}
+
 void Box2dTestSprite::initPhysics()
 {
 	_L2World.world->SetGravity(b2Vec2(0, -10.0f));
@@ -324,7 +352,10 @@ void Box2dTestSprite::initPhysics()
 	//_testXiaoCheRevoluteJoint();
 	//_testApplyFunction();
 	//_testMassData();
-	_testContactTestCase1();
+	//_testContactTestCase1();
+	//_testImpluseTestCase();
+	//_testOneWayWallTestCase();
+	_testMouseJoint();
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -391,6 +422,22 @@ void Box2dTestSprite::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 		}
 	}
 	*/
+}
+
+void Box2dTestSprite::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
+{
+	cocos2d::Vec2 pos = touch->getLocation();
+	if (testCase) {
+		testCase->onTouchMoved(touch->getLocation());
+	}
+}
+
+void Box2dTestSprite::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
+{
+	if (testCase)
+	{
+		testCase->onKeyReleased(keyCode);
+	}
 }
 
 void Box2dTestSprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)

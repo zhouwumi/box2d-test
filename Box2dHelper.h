@@ -27,8 +27,6 @@ public:
 	static b2PolygonShape createSemicircle(float width, float height);
 	static float getPTMRatio();
 
-private:
-	
 	static b2FixtureDef& getFixtureDef();
 };
 

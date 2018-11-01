@@ -14,7 +14,9 @@ public:
 
 	virtual void onTouchBegin(cocos2d::Vec2 position);
 	virtual void onTouchEnd(cocos2d::Vec2 position);
+	virtual void onTouchMoved(cocos2d::Vec2 position);
 
+	virtual void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode);
 	virtual void step();
 
 };

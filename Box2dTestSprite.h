@@ -24,6 +24,9 @@ private:
 	
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+	void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
+
+	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 	//测试圆形shape
 	void _testCircleShape();
 	//测试多边形shape
@@ -50,6 +53,12 @@ private:
 	//测试万有引力
 	void _testContactTestCase1();
 
+	//测试冲量
+	void _testImpluseTestCase();
+	//测试单边平台
+	void _testOneWayWallTestCase();
+	//测试Mouse joint关节
+	void _testMouseJoint();
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
