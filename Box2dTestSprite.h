@@ -59,6 +59,9 @@ private:
 	void _testOneWayWallTestCase();
 	//测试Mouse joint关节
 	void _testMouseJoint();
+	
+	//测试位移关节
+	void _testPrismaticJoint();
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
