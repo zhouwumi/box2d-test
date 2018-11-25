@@ -261,6 +261,36 @@ b2PolygonShape Box2dHelper::createSemicircle(float width, float height)
 	shape.Set(&verticesList[0], verticesList.size());
 	return shape;
 }
+
+b2Vec2& Box2dHelper::GetWorldCenterPoint()
+{
+	cocos2d::Size winSize = cocos2d::Director::getInstance()->getWinSize();
+	cocos2d::Vec2 originPosition = cocos2d::Director::getInstance()->getVisibleOrigin();
+
+	return b2Vec2((originPosition.x + winSize.width / 2) / Box2dHelper::getPTMRatio(), (originPosition.y + winSize.height / 2) / Box2dHelper::getPTMRatio());
+}
+
+b2Vec2& Box2dHelper::GetButtonCenterPoint()
+{
+	cocos2d::Size winSize = cocos2d::Director::getInstance()->getWinSize();
+	cocos2d::Vec2 originPosition = cocos2d::Director::getInstance()->getVisibleOrigin();
+
+	return b2Vec2((originPosition.x + winSize.width / 2) / Box2dHelper::getPTMRatio(), (originPosition.y) / Box2dHelper::getPTMRatio());
+}
+
+b2Vec2& Box2dHelper::GetTopCenterPoint()
+{
+	cocos2d::Size winSize = cocos2d::Director::getInstance()->getWinSize();
+	cocos2d::Vec2 originPosition = cocos2d::Director::getInstance()->getVisibleOrigin();
+
+	return b2Vec2((originPosition.x + winSize.width / 2) / Box2dHelper::getPTMRatio(), (originPosition.y + winSize.height) / Box2dHelper::getPTMRatio());
+}
+
+b2Body* Box2dHelper::CreateEmptyBody(b2World* world)
+{
+	b2BodyDef emptyBodyDef;
+	return world->CreateBody(&emptyBodyDef);
+}
 /*
 b2BodyDef:
 type

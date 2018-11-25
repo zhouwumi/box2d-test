@@ -28,5 +28,10 @@ public:
 	static float getPTMRatio();
 
 	static b2FixtureDef& getFixtureDef();
+
+	static b2Vec2& GetWorldCenterPoint();
+	static b2Vec2& GetButtonCenterPoint();
+	static b2Vec2& GetTopCenterPoint();
+	static b2Body* CreateEmptyBody(b2World* world);
 };
 

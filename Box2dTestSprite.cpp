@@ -8,6 +8,9 @@
 #include "test_case/OneWayWallTestCase.h"
 #include "test_case/b2MouseJointTestCase.h"
 #include "test_case/b2PrismaticJointTestCase.h"
+#include "test_case/b2DistanceJointTestCase.h"
+#include "test_case/b2WeldJointTestCase.h"
+#include "test_case/b2PulleyJointPointTestCase.h"
 
 #define PTM_RATIO 32
 
@@ -333,6 +336,24 @@ void Box2dTestSprite::_testPrismaticJoint()
 	testCase->test();
 }
 
+void Box2dTestSprite::_testDistanceJoint()
+{
+	testCase = new b2DistanceJointTestCase(&this->_L2World);
+	testCase->test();
+}
+
+void Box2dTestSprite::_testMeldJoint()
+{
+	testCase = new b2WeldJointTestCase(&this->_L2World);
+	testCase->test();
+}
+
+void Box2dTestSprite::_testPulleyJoint()
+{
+	testCase = new b2PulleyJointPointTestCase(&this->_L2World);
+	testCase->test();
+}
+
 void Box2dTestSprite::initPhysics()
 {
 	_L2World.world->SetGravity(b2Vec2(0, -10.0f));
@@ -363,7 +384,10 @@ void Box2dTestSprite::initPhysics()
 	//_testImpluseTestCase();
 	//_testOneWayWallTestCase();
 	//_testMouseJoint();
-	_testPrismaticJoint();
+	//_testPrismaticJoint();
+	//_testDistanceJoint();
+	//_testMeldJoint();
+	_testPulleyJoint();
 }
 
 bool Box2dTestSprite::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)

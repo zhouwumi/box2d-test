@@ -62,6 +62,15 @@ private:
 	
 	//测试位移关节
 	void _testPrismaticJoint();
+	
+	//测试距离关节
+	void _testDistanceJoint();
+
+	//测试粘贴关节
+	void _testMeldJoint();
+	
+	//测试滑轮关节
+	void _testPulleyJoint();
 private:
 	L2Box2dWorld _L2World;
 	cocos2d::Mat4 _modelViewMV;
